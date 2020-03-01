@@ -1,8 +1,7 @@
 class Task {
-  constructor() {
-
+  constructor(name) {
+    this.taskName = name;
+    this.completed = false;
+    this.id = Date.now();
   }
 }
-
-
-//Not given any requirements about what methods or properties should be on it.
