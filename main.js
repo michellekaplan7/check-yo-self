@@ -5,20 +5,25 @@ var taskItem = document.querySelector(".task-item-input-field");
 var titleHolder = document.querySelector(".task-title-input-field");
 var main = document.querySelector(".main-section");
 var makeTaskListButton = document.querySelector(".make-task-list-btn");
+var clearAllButton = document.querySelector("#clear-all-btn");
 var toDos = [];
 var temporaryTasks = [];
 
 addTaskButton.addEventListener('click', addTaskItem);
 taskItemPlaceholder.addEventListener('click', removeTaskItem);
-taskItem.addEventListener("keyup", handleDisableButton);
 makeTaskListButton.addEventListener('click', createToDoList);
+clearAllButton.addEventListener('click', clearInputs);
 
-function addTaskItem() {
+function addTaskItem(event) {
+  console.log(event);
+  if (taskItem.value != "") {
   var task = new Task(taskItem.value);
   addTaskToTemporaryTasks(task);
 
   taskItemPlaceholder.insertAdjacentHTML('beforeend',
     `<p class="task" data-id=${task.id}><img class="delete-icon" src="assets/delete.svg" /> ${task.taskName}</p>`);
+  taskItem.value = '';
+  }
 }
 
 function removeTaskItem(event) {
@@ -28,14 +33,6 @@ function removeTaskItem(event) {
 
     taskElement.remove();
     removeTaskFromTemporaryTasks(taskId);
-  }
-}
-
-function handleDisableButton() {
-  if (taskItem.value === "") {
-    addTaskButton.disabled = true;
-  } else {
-    addTaskButton.disabled = false;
   }
 }
 
@@ -56,27 +53,56 @@ function removeTaskFromTemporaryTasks(taskId) {
 
 function createToDoList() {
   var title = titleHolder.value;
-  var toDoList = new ToDoList(title, temporaryTasks);
-  console.log(toDoList);
-  console.log(main);
-  var card = document.createElement("section");
-  card.innerHTML = `<section class="todo-card">
-    <h3>${toDoList.title}</h3>
-    <hr>
-    <span class="task-item"><img class="checkbox" src="assets/checkbox.svg" />${temporaryTasks[i]}</span>
-    <span class="task-item"><img class="checkbox" src="assets/checkbox.svg" />Task Item #2</span>
-    <span class="task-item"><img class="checkbox" src="assets/checkbox.svg" />Task Item #3</span>
-    <hr>
-    <section class="todo-card-bottom">
-    <div>
-      <img class="todo-card-image" src="assets/urgent.svg" />
-      <p>URGENT</p>
-    </div>
-    <div>
-      <img class="todo-card-image" src="assets/delete.svg" />
-      <p>DELETE</p>
-    </div>
-  </section>
-  </section>`
-  main.appendChild(card);
+  if (title && temporaryTasks.length > 0) {
+    var toDoList = new ToDoList(title, temporaryTasks);
+    toDos.push(toDoList);
+    console.log(toDos);
+    // console.log(toDoList);
+    // console.log(main);
+    var card = document.querySelector(".main-section");
+    card.innerHTML +=
+        `<section class="todo-card">
+          <h3>${toDoList.title}</h3>
+            <hr>
+            <div class="card-tasks" data-id=${toDoList.id}></div>
+            <hr>
+          <section class="todo-card-bottom">
+          <div>
+          <img class="todo-card-image" src="assets/urgent.svg">
+          <p class="card-text-bottom">Urgent</p>
+          </div>
+          <div>
+          <img class="todo-card-image" src="assets/delete.svg">
+          <p class="card-text-bottom">Delete</p>
+          </div>
+          </section>
+          </section>`
+
+    var insertTask = document.querySelector(`.card-tasks[data-id='${toDoList.id}']`);
+
+    for (var i = 0; i < toDoList.tasks.length; i++) {
+      insertTask.innerHTML += `
+      <span class="task-item"><img class="checkbox" src="assets/checkbox.svg" />${toDoList.tasks[i].taskName}</span>`
+    }
+  }
+  clearInputs();
+  // messageOnPage();
 }
+
+function clearInputs() {
+  if (taskItem.value === '' && titleHolder.value === '') {
+    return
+  } else {
+    taskItem.value = '';
+    titleHolder.value = '';
+    taskItemPlaceholder.innerHTML = ``;
+    temporaryTasks = [];
+  }
+}
+
+// function messageOnPage() {
+//   var message = document.querySelector(".message");
+//   if (toDos.length > 0) {
+//     message.classList.remove(message);
+//   }
+// }
