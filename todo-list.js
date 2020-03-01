@@ -19,5 +19,9 @@ class ToDoList {
   }
 }
 
+// function emptyTemporaryTasksArray {
+//
+// }
+
 
 //Each todo list on the page should be created as an instance of the ToDoList class.

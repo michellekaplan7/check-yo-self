@@ -138,17 +138,18 @@ button:hover {
 
 /* todo card */
 .todo-card {
-  background-color: #FAFDFFa;
+  background-color: #FAFDFF;
   border: 2px solid #C7D3D8;
   display: inline-block;
-  height: 40%;
+  /* height: 40%; */
   margin: 2em;
-  width: 80%;
+  width: 30%;
 }
 
 h3,
 .task-item {
   color: #1F1F3D;
+  padding: .5em;
 }
 
 .checkbox {
@@ -172,11 +173,18 @@ h3,
 .todo-card-bottom {
   display: flex;
   justify-content: space-between;
+  padding: .5em;
+}
+
+.card-text-bottom {
+  color: #3C6577;
+  text-transform: uppercase;
 }
 /* end of todo card */
 
 /* right side main section */
 .main-section {
+  /* column-count: 2; */
   background-color: #F3F6F7;
   flex-grow: 1;
   padding: 1em;
