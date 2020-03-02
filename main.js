@@ -6,6 +6,7 @@ var main = document.querySelector(".main-section");
 var makeTaskListButton = document.querySelector(".make-task-list-btn");
 var clearAllButton = document.querySelector("#clear-all-btn");
 var card = document.querySelector(".main-section");
+var toDoMessage = document.querySelector(".message");
 var toDos = [];
 var temporaryTasks = [];
 
@@ -15,11 +16,12 @@ makeTaskListButton.addEventListener('click', createToDoList);
 clearAllButton.addEventListener('click', clearInputs);
 window.addEventListener('load', retrieveStorage)
 
-function retrieveStorage(){
+function retrieveStorage() {
   console.log(toDos)
   var savedToDos = JSON.parse(localStorage.getItem('list'));
   console.log(savedToDos)
   if (savedToDos === null) {
+    userMessage();
     return;
   }
   for (var i = 0; i < savedToDos.length; i++) {
@@ -34,7 +36,7 @@ function retrieveStorage(){
 function displayToDoCardsFromStorage(toDos) {
   for (var i = 0; i < toDos.length; i++) {
     card.innerHTML +=
-    `<section class="todo-card">
+      `<section class="todo-card">
     <h3>${toDos[i].title}</h3>
     <hr>
     <div class="card-tasks" data-id=${toDos[i].id}></div>
@@ -55,23 +57,23 @@ function displayToDoCardsFromStorage(toDos) {
 }
 
 function displayTasksFromStorage(toDo) {
-var insertTask = document.querySelector(`.card-tasks[data-id='${toDo.id}']`);
-console.log(toDo);
-console.log(toDo.tasks);
-for (var i = 0; i < toDo.tasks.length; i++) {
-  insertTask.innerHTML += `
+  var insertTask = document.querySelector(`.card-tasks[data-id='${toDo.id}']`);
+  console.log(toDo);
+  console.log(toDo.tasks);
+  for (var i = 0; i < toDo.tasks.length; i++) {
+    insertTask.innerHTML += `
   <span class="task-item"><img class="checkbox" src="assets/checkbox.svg" />${toDo.tasks[i].taskName}</span>`
-}
+  }
 }
 
 function addTaskItem(event) {
   if (taskItem.value != "") {
-  var task = new Task(taskItem.value);
-  addTaskToTemporaryTasks(task);
+    var task = new Task(taskItem.value);
+    addTaskToTemporaryTasks(task);
 
-  taskItemPlaceholder.insertAdjacentHTML('beforeend',
-    `<p class="task" data-id=${task.id}><img class="delete-icon" src="assets/delete.svg" /> ${task.taskName}</p>`);
-  taskItem.value = '';
+    taskItemPlaceholder.insertAdjacentHTML('beforeend',
+      `<p class="task" data-id=${task.id}><img class="delete-icon" src="assets/delete.svg" /> ${task.taskName}</p>`);
+    taskItem.value = '';
   }
 }
 
@@ -104,8 +106,9 @@ function createToDoList() {
   if (titleHolder.value && temporaryTasks.length > 0) {
     var toDoList = new ToDoList(Date.now(), titleHolder.value, temporaryTasks);
     toDos.push(toDoList);
+    userMessage();
     card.innerHTML +=
-        `<section class="todo-card">
+      `<section class="todo-card">
           <h3>${toDoList.title}</h3>
             <hr>
             <div class="card-tasks" data-id=${toDoList.id}></div>
@@ -141,5 +144,13 @@ function clearInputs() {
     titleHolder.value = '';
     taskItemPlaceholder.innerHTML = ``;
     temporaryTasks = [];
+  }
+}
+
+function userMessage() {
+  if (toDos.length === 0) {
+    toDoMessage.classList.remove('hide');
+  } else {
+    toDoMessage.classList.add('hide');
   }
 }

@@ -189,4 +189,8 @@ h3,
   flex-grow: 1;
   padding: 1em;
 }
+
+.hide {
+  display: none;
+}
 /* end of right side main section */
