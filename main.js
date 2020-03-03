@@ -1,12 +1,12 @@
-var taskItemPlaceholder = document.querySelector(".task-items-placeholder");
-var addTaskButton = document.querySelector(".add-task-item-btn");
-var taskItem = document.querySelector(".task-item-input-field");
-var titleHolder = document.querySelector(".task-title-input-field");
-var main = document.querySelector(".main-section");
-var makeTaskListButton = document.querySelector(".make-task-list-btn");
-var clearAllButton = document.querySelector("#clear-all-btn");
-var card = document.querySelector(".main-section");
-var toDoMessage = document.querySelector(".message");
+var taskItemPlaceholder = document.querySelector('.task-items-placeholder');
+var addTaskButton = document.querySelector('.add-task-item-btn');
+var taskItem = document.querySelector('.task-item-input-field');
+var titleHolder = document.querySelector('.task-title-input-field');
+var main = document.querySelector('.main-section');
+var makeTaskListButton = document.querySelector('.make-task-list-btn');
+var clearAllButton = document.querySelector('#clear-all-btn');
+var card = document.querySelector('.main-section');
+var toDoMessage = document.querySelector('.message');
 var toDos = [];
 var temporaryTasks = [];
 
@@ -14,12 +14,11 @@ addTaskButton.addEventListener('click', addTaskItem);
 taskItemPlaceholder.addEventListener('click', removeTaskItem);
 makeTaskListButton.addEventListener('click', createToDoList);
 clearAllButton.addEventListener('click', clearInputs);
-window.addEventListener('load', retrieveStorage)
+main.addEventListener('click', updateCard);
+window.addEventListener('load', retrieveStorage);
 
 function retrieveStorage() {
-  console.log(toDos)
   var savedToDos = JSON.parse(localStorage.getItem('list'));
-  console.log(savedToDos)
   if (savedToDos === null) {
     userMessage();
     return;
@@ -28,8 +27,6 @@ function retrieveStorage() {
     var toDoList = new ToDoList(savedToDos[i].id, savedToDos[i].title, savedToDos[i].tasks, savedToDos[i].urgent);
     toDos.push(toDoList);
   }
-
-  console.log(toDos)
   displayToDoCardsFromStorage(toDos);
 }
 
@@ -58,11 +55,15 @@ function displayToDoCardsFromStorage(toDos) {
 
 function displayTasksFromStorage(toDo) {
   var insertTask = document.querySelector(`.card-tasks[data-id='${toDo.id}']`);
-  console.log(toDo);
-  console.log(toDo.tasks);
+  var completedImage;
   for (var i = 0; i < toDo.tasks.length; i++) {
+    if (toDo.tasks[i].completed === true) {
+      completedImage = "assets/checkbox-active.svg";
+    } else {
+      completedImage = "assets/checkbox.svg";
+    }
     insertTask.innerHTML += `
-  <span class="task-item"><img class="checkbox" src="assets/checkbox.svg" />${toDo.tasks[i].taskName}</span>`
+  <span class="task-item"><img class="checkbox checkbox${toDo.id}" data-id=${toDo.id} data-taskid=${toDo.tasks[i].id} src=${completedImage} />${toDo.tasks[i].taskName}</span>`
   }
 }
 
@@ -72,7 +73,7 @@ function addTaskItem(event) {
     addTaskToTemporaryTasks(task);
 
     taskItemPlaceholder.insertAdjacentHTML('beforeend',
-      `<p class="task" data-id=${task.id}><img class="delete-icon" src="assets/delete.svg" /> ${task.taskName}</p>`);
+      `<p class="task" data-id='${task.id}'><img class="delete-icon" data-id='${task.id}' src="assets/delete.svg" /> ${task.taskName}</p>`);
     taskItem.value = '';
   }
 }
@@ -129,7 +130,7 @@ function createToDoList() {
 
     for (var i = 0; i < toDoList.tasks.length; i++) {
       insertTask.innerHTML += `
-      <span class="task-item"><img class="checkbox" src="assets/checkbox.svg" />${toDoList.tasks[i].taskName}</span>`
+      <span class="task-item"><img class="checkbox checkbox${toDoList.id}" data-id=${toDoList.id} data-taskid=${toDoList.tasks[i].id} src="assets/checkbox.svg" />${toDoList.tasks[i].taskName}</span>`
     }
   }
   toDoList.saveToStorage();
@@ -152,5 +153,27 @@ function userMessage() {
     toDoMessage.classList.remove('hide');
   } else {
     toDoMessage.classList.add('hide');
+  }
+}
+
+function updateCard() {
+  var currentTaskId = event.target.dataset.taskid
+  var checkTaskComplete = event.target;
+  var currentList = event.target.closest(".card-tasks");
+  var index;
+  var taskCheckBox = event.target.closest(".task-item");
+  if (checkTaskComplete.getAttribute('src') == "assets/checkbox.svg") {
+    checkTaskComplete.src = "assets/checkbox-active.svg";
+    taskCheckBox.classList.add("completed-task");
+  } else {
+    checkTaskComplete.src = "assets/checkbox.svg";
+    taskCheckBox.classList.remove("completed-task");
+  }
+  for (var i = 0; i < toDos.length; i++) {
+    if (currentList.dataset.id == toDos[i].id) {
+      index = i;
+      var currentListUpdate = toDos[i]
+      currentListUpdate.updateTask(currentTaskId);
+    }
   }
 }

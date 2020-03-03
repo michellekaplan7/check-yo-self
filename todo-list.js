@@ -5,6 +5,7 @@ class ToDoList {
     this.tasks = tasks;
     this.urgent = false;
   }
+
   saveToStorage() {
     localStorage.setItem('list', JSON.stringify(toDos));
   }
@@ -13,11 +14,16 @@ class ToDoList {
   //   localStorage.removeItem('list');
   // }
 
-  updateToDo() {
-    this.urgent != this.urgent;
-    //should update the todo's title and urgency
-  }
-  updateTask() {
-    //should update a task's content and if it has been completed
+  // updateToDo() {
+  //   this.urgent != this.urgent;
+  // }
+
+  updateTask(currentTaskId) {
+    for (var i = 0; i < this.tasks.length; i++) {
+      if (currentTaskId == this.tasks[i].id) {
+        this.tasks[i].completed = !this.tasks[i].completed;
+        this.saveToStorage();
+      }
+    }
   }
 }
